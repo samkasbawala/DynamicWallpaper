@@ -1,9 +1,18 @@
 <html>
+
 <head>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <script type="text/javascript" src="control.js"></script> 
-  <script type="text/javascript" src="wallpaperengine.js"></script> 
+  <script type="text/javascript" src="control.js"></script>
+  <script type="text/javascript" src="wallpaperengine.js"></script>
 </head>
-<body>
+
+<body onload="realtimeClock()">
+  <div class="container">
+    <div class="inner-container">
+      <div id="clock"></div>
+      <div id="date"></div>
+    </div>
+  </div>
 </body>
+
 </html>

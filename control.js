@@ -1,9 +1,9 @@
 window.dynamicWPControl = {
 
 	// Wallpaper metadatas
-	imgCount: null,
-	sunriseImgNo: null,
-	sunsetImgNo: null,
+	imgCount: 8,
+	sunriseImgNo: 1,
+	sunsetImgNo: 8,
 
 	// Properties
 	prop: {
@@ -34,33 +34,33 @@ window.dynamicWPControl = {
 	],
 
 	// Control status
-	initialized: false, 
+	initialized: false,
 	requestingLocation: false,
 	requestingSunTime: false,
-	sunriseTime: null, 
-	sunsetTime: null, 
-	timeCycle: null, 
+	sunriseTime: null,
+	sunsetTime: null,
+	timeCycle: null,
 	updateTimer: null,
 	preload: [],
-	imgNo: 1,
+	imgNo: 8,
 
 	// Apply new image with number n
-	applyImg: function(n) {
+	applyImg: function (n) {
 		document.body.style.backgroundImage = "url('img/" + n + ".png')";
 		this.imgNo = n;
 	},
 
-	getImgNo: function(time) {
-		for (var i = 1; i <= this.imgCount; i ++) {
+	getImgNo: function (time) {
+		for (var i = 1; i <= this.imgCount; i++) {
 			var interval = Math.abs(this.timeCycle[i] - this.timeCycle[i + 1]);
-			if ((time >= this.timeCycle[i] && time < this.timeCycle[i] + interval) 
+			if ((time >= this.timeCycle[i] && time < this.timeCycle[i] + interval)
 				|| (time >= this.timeCycle[i + 1] - interval && time < this.timeCycle[i + 1])) return i;
 		}
 		return this.imgNo;
 	},
 
 	// Check current image and update as desired
-	update: function() {
+	update: function () {
 		if (this.requestingLocation || this.requestingSunTime) return;
 		if (this.prop.staticMode) {
 			if (this.imgNo != this.prop.staticImgNo) this.applyImg(this.prop.staticImgNo);
@@ -72,23 +72,23 @@ window.dynamicWPControl = {
 	},
 
 	// Set update timer
-	startUpdate: function() {
+	startUpdate: function () {
 		this.update();
 		if (this.updateTimer) clearInterval(this.updateTimer);
-		this.updateTimer = setInterval(function() {
+		this.updateTimer = setInterval(function () {
 			window.dynamicWPControl.update();
 		}, this.prop.updateInt * 1000);
 	},
 
 	// Set update timer
-	stopUpdate: function() {
+	stopUpdate: function () {
 		clearInterval(this.updateTimer);
 		this.updateTimer = null;
 		this.update();
 	},
 
 	// Calculate and fill the timeCycle array with start time for each image
-	calcTimeCycle: function() {
+	calcTimeCycle: function () {
 		var res = new Array(this.imgCount + 1);
 		var sunriseFirst = this.sunriseImgNo < this.sunsetImgNo;
 		var startImgNo = sunriseFirst ? this.sunriseImgNo : this.sunsetImgNo;
@@ -96,21 +96,21 @@ window.dynamicWPControl = {
 		var startTime = sunriseFirst ? this.sunriseTime : this.sunsetTime;
 		var endTime = sunriseFirst ? this.sunsetTime : this.sunriseTime;
 		var insideInterval = (endTime - startTime) / (endImgNo - startImgNo);
-		var outsideInterval = (24*60 - endTime + startTime) / (this.imgCount - endImgNo + startImgNo);
+		var outsideInterval = (24 * 60 - endTime + startTime) / (this.imgCount - endImgNo + startImgNo);
 
 		res[startImgNo] = startTime;
 		res[endImgNo] = endTime;
-		for (var i = startImgNo - 1; i >= 1; i --) res[i] = res[i+1] - outsideInterval;
-		for (var i = startImgNo + 1; i < endImgNo; i ++) res[i] = res[i-1] + insideInterval;
-		for (var i = endImgNo + 1; i <= this.imgCount + 1; i ++) res[i] = res[i-1] + outsideInterval;
-		for (var i = 1; i <= this.imgCount + 1; i ++) {
-			if (res[i] >= 24*60) res[i] -= 24*60;
-			else if (res[i] < 0) res[i] += 24*60;
+		for (var i = startImgNo - 1; i >= 1; i--) res[i] = res[i + 1] - outsideInterval;
+		for (var i = startImgNo + 1; i < endImgNo; i++) res[i] = res[i - 1] + insideInterval;
+		for (var i = endImgNo + 1; i <= this.imgCount + 1; i++) res[i] = res[i - 1] + outsideInterval;
+		for (var i = 1; i <= this.imgCount + 1; i++) {
+			if (res[i] >= 24 * 60) res[i] -= 24 * 60;
+			else if (res[i] < 0) res[i] += 24 * 60;
 		}
 		this.timeCycle = res;
 	},
 
-	updateTimeCircle: function() {
+	updateTimeCircle: function () {
 		this.calcTimeCycle();
 		this.update();
 	},
@@ -121,24 +121,24 @@ window.dynamicWPControl = {
 		this.updateTimeCircle();
 	},
 
-	requestJSON: function(server, handler) {
+	requestJSON: function (server, handler) {
 		var request = new XMLHttpRequest();
 		request.open('GET', server.url, true);
 		var dwc = window.dynamicWPControl;
-		request.onload = function() {
+		request.onload = function () {
 			dwc[handler]({
 				server: server,
 				data: (this.status >= 200 && this.status < 400) ? JSON.parse(this.response) : null
 			});
 		};
-		request.onerror = function() {
+		request.onerror = function () {
 			dwc[handler](null);
 		};
 		request.send();
 	},
 
 	// Use location API to get local latitude and longitude
-	requestLocation: function() {
+	requestLocation: function () {
 		this.requestingLocation = true;
 		for (var i in this.locationServers) {
 			this.locationServers[i].waiting = true;
@@ -146,7 +146,7 @@ window.dynamicWPControl = {
 		};
 	},
 
-	receiveLocation: function(response) {
+	receiveLocation: function (response) {
 		if (!this.requestingLocation) return;
 		if (response.data) {
 			this.requestingLocation = false;
@@ -163,7 +163,7 @@ window.dynamicWPControl = {
 		}
 	},
 
-	receiveSunTime: function(response) {
+	receiveSunTime: function (response) {
 		if (!this.requestingSunTime) return;
 		if (response.data) {
 			this.requestingSunTime = false;
@@ -178,7 +178,7 @@ window.dynamicWPControl = {
 			this.applyManualSunTime();
 		}
 	},
-	
+
 	// Convert ISO time string to Date object
 	parseISOString: function (s) {
 		var b = s.split(/\D+/);
@@ -186,9 +186,9 @@ window.dynamicWPControl = {
 	},
 
 	// Apply properties to adjust control status
-	applyProps: function(option) {
+	applyProps: function (option) {
 		if (!option || option == "customint4") document.body.style.transition = "all " + this.prop.aniDuration + "s ease-out";
-		if (!option || option == "custombool2")  this[this.prop.netLocation ? "requestLocation" : "applyManualSunTime"]();
+		if (!option || option == "custombool2") this[this.prop.netLocation ? "requestLocation" : "applyManualSunTime"]();
 		if (!option || option == "customint2" || option == "customint3") this.updateTimeCircle();
 		if (!option || option == "custombool") this[this.prop.staticMode ? "stopUpdate" : "startUpdate"]();
 		if (!option || option == "customint") if (this.prop.staticMode) this.update();
@@ -199,13 +199,75 @@ window.dynamicWPControl = {
 	},
 
 	// When properties are loaded, initialize the object
-	initialize: function() {
+	initialize: function () {
 		var propLoaded = (this.prop.staticMode !== null) && this.prop.staticImgNo
 			&& (this.prop.netLocation !== null) && this.prop.sunriseTime && this.prop.sunsetTime
 			&& (this.prop.aniDuration !== null) && this.prop.updateInt;
 		if (!propLoaded || this.initialized) return;
 		this.applyProps();
-		for (var i = 1; i <= this.imgCount; i ++) this.preload += new Image("img/" + i + ".png");
+		for (var i = 1; i <= this.imgCount; i++) this.preload += new Image("img/" + i + ".png");
 		this.initialized = true;
 	}
 };
+
+// Clock stuff
+function realtimeClock() {
+
+	// Create a date object
+	var rtClock = new Date();
+
+	// Get the various time units
+	var hours = rtClock.getHours();
+	var minutes = rtClock.getMinutes();
+	var seconds = rtClock.getSeconds();
+
+	// Determine whether it's the AM or PM
+	var amPm = (hours < 12) ? "AM" : "PM";
+
+	// Subtract 12 if past 12 PM
+	hours = (hours > 12) ? hours - 12 : hours;
+
+	// Pad with leading zeros
+	hours = ("0" + hours).slice(-2);
+	minutes = ("0" + minutes).slice(-2);
+	seconds = ("0" + seconds).slice(-2);
+
+	// Get the date
+	var year = rtClock.getFullYear();
+	var month = rtClock.getMonth();
+	var date = rtClock.getDate();
+	var day = rtClock.getDay();
+
+	var months = new Map();
+	months.set(0, "January")
+	months.set(1, "February")
+	months.set(2, "March")
+	months.set(3, "April")
+	months.set(4, "May")
+	months.set(5, "June")
+	months.set(6, "July")
+	months.set(7, "August")
+	months.set(8, "September")
+	months.set(9, "October")
+	months.set(10, "November")
+	months.set(11, "December")
+
+	// Define a hashmap for the weekdays
+	var weekdays = new Map();
+	weekdays.set(0, "Sunday")
+	weekdays.set(1, "Monday")
+	weekdays.set(2, "Tuesday")
+	weekdays.set(3, "Wednesday")
+	weekdays.set(4, "Thursday")
+	weekdays.set(5, "Friday")
+	weekdays.set(6, "Saturday")
+
+	// Set the time and date
+	document.getElementById("clock").innerHTML =
+		hours + " : " + minutes + " : " + seconds + " " + amPm;
+
+	document.getElementById("date").innerHTML =
+		weekdays.get(day).toUpperCase() + ", " + months.get(month).toUpperCase() + " " + date + ", " + year;
+
+	var l = setTimeout(realtimeClock, 500);
+}

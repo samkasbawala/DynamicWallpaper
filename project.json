@@ -1,6 +1,6 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "",
+	"description" : "This desktop picture changes throughout the day, based on your location.\nInspired by, and based on, macOS Catalina 1.0.6 by LucKY: https://steamcommunity.com/sharedfiles/filedetails/?id=1886569071\n--------------------------------------------------------------------------------\nIncludes macOS 11 Big Sur's Wallpapers, changing based on the time of day (dynamic mode) or manually selected within Wallpaper Engine's UI (static mode).\n--------------------------------------------------------------------------------\nNotes:\n- Internet-based location detection might not be functional under some network conditions and in some regions\n- To make your own dynamic wallpaper, visit GitHub page for codes: https://github.com/Yaindrop/DynamicWallpaper\n- Original from Yaindrop and LucKY",
 	"file" : "index.html",
 	"general" : 
 	{
@@ -20,7 +20,7 @@
 			},
 			"customint" : 
 			{
-				"max" : 16,
+				"max" : 8,
 				"min" : 1,
 				"text" : "Static Image Number",
 				"type" : "slider",
@@ -63,12 +63,17 @@
 				"order" : 0,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "0 0.43137254901960786 1"
+				"value" : "0.19215686274509805 0.7254901960784313 0.9647058823529412"
 			}
 		}
 	},
 	"monetization" : false,
-	"preview" : "",
-	"tags" : [],
-	"title" : "Untitled"
+	"preview" : "preview.gif",
+	"tags" : [ "Nature" ],
+	"title" : "macOS Big Sur Dynamic",
+	"type" : "Web",
+	"version" : 3,
+	"visibility" : "public",
+	"workshopid" : "2139400761",
+	"workshopurl" : "steam://url/CommunityFilePage/2139400761"
 }
